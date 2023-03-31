@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/login.css') }}" />
+    <script src="{{url_for('static', filename='login.js')}}"></script>
+</head>
+<body>
+
+<form name="user_login" action="/login" onsubmit="return validateForm()" method="POST">
+    <p>Username: <input type="text" name="user_name" /></p>
+    <p>Password: <input type="password" name="user_password" /></p>
+    <p><input type="submit" value="login"></p>
+</form>
+<p><a href="/register">Register</a></p>
+
+</body>
+</html>
