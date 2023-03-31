@@ -4,32 +4,77 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
-        table, th, td {
-        border: 1px solid;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto; /* center the table horizontally */
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 80%; /* increase the table size */
+            max-width: 800px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        select {
+            padding: 5px;
+            font-size: 16px;
+            border: none;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 5px #999;
+        }
+
+        a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 <table>
-    <tr>
-        <th>Election ID</th>
-        <th>Status</th>
-    </tr>
-    {%for election in elections %}
-    <tr>
-        <td>{{election[0]}}</td>
-        <td>
-            <form action="/manage_election_after" method="POST">
-          <select name="election_select" id=select onchange="this.form.submit()">
-              <option value="select_to_change" selected>not selected</option>
-              <option value="ongoing {{election[0]}}">ongoing</option>
-              <option value="completed {{election[0]}}">completed</option>
-              <option value="canceled {{election[0]}}">cancelled</option>
-          </select>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>Election ID</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for election in elections %}
+        <tr>
+            <td>{{election[0]}}</td>
+            <td>
+                <form action="/manage_election_after" method="POST">
+                  <select name="election_select" id=select onchange="this.form.submit()">
+                      <option value="select_to_change" selected>not selected</option>
+                      <option value="ongoing {{election[0]}}">ongoing</option>
+                      <option value="completed {{election[0]}}">completed</option>
+                      <option value="canceled {{election[0]}}">cancelled</option>
+                  </select>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 <p><a href="/admin_panel">Go back to admin panel</a></p>
 </body>
