@@ -44,7 +44,7 @@ app.secret_key = "not so secret key"
 # funcs
 
 # web functions
-@app.route("/")
+@app.route("/")   #yorum yaptım, github yükledim, hehee. :)
 @app.route("/index")
 def ana_index():
     if "election_id" not in session:
