@@ -69,7 +69,7 @@ def login():  # does the login operation. Connects with database end checks it. 
 @app.route("/admin_panel",methods=["GET", "POST"])
 def show_admin_panel():
     if session["admin_login"]==1:
-        return render_template("admin_panel.html",session_election=session["election_id"])
+        return render_template("admin_panel.html")
     else:
         return redirect(url_for(loginpage))
 @app.route("/create_candidate",methods=["GET", "POST"])
