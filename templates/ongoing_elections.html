@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table>
+    <tr>
+        <th>ID:</th>
+        <th></th>
+    </tr>
+    {%for election in elections %}
+    <tr>
+        <td>{{election[0]}}</td>
+        <td><a href="/citizen_index/{{election[0]}}">Vote!</a></td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

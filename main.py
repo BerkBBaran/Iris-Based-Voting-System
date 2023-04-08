@@ -112,6 +112,13 @@ def register_candidate():
     # Commit your changes in the database
     db.commit()
     return redirect(url_for("show_admin_panel"))
+@app.route("/show_ongoing_election")
+def show_ongoing():
+    db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
+    cursor = db.cursor()
+    cursor.execute("SELECT id FROM election WHERE status='ongoing' ")
+    ongoing_elections = cursor.fetchall()
+    return render_template("ongoing_elections.html",elections=ongoing_elections)
 @app.route("/admin_logout")
 def admin_logout():
     session["admin_login"]=0
@@ -140,7 +147,7 @@ def take_photo():
     citizen_id= request.form.get("TC")
     session["TC"]=citizen_id
     print(citizen_id)
-    return redirect(url_for("citizen_index"))
+    return redirect(url_for("show_ongoing"))
     video_capture = cv2.VideoCapture(0)
     faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
     eyesCascade = cv2.CascadeClassifier("haarcascade_eye.xml")
@@ -227,15 +234,16 @@ def create_election():
 @app.route("/citizen_tc")
 def get_tc():
     return render_template("get_tc.html")
-@app.route("/citizen_index")
-def citizen_index():
+@app.route("/citizen_index/<election_id>")
+def citizen_index(election_id):
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
-    cursor.execute(("SELECT * FROM president WHERE vote_ballot_id = %s" % 12))
+    print(election_id)
+    cursor.execute(("SELECT * FROM president WHERE vote_ballot_id = %s" % election_id))
     records = cursor.fetchall()
     return render_template("citizen_index.html",candidates=records)
-@app.route("/register_vote/<candidate_id>/<candidate_keyword>")
-def register_vote(candidate_id,candidate_keyword):
+@app.route("/register_vote/<candidate_id>/<candidate_keyword>/<election_id>")
+def register_vote(candidate_id,candidate_keyword,election_id):
     citizen_tc = session["TC"]
     print(citizen_tc,candidate_id,candidate_keyword)
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
@@ -245,7 +253,7 @@ def register_vote(candidate_id,candidate_keyword):
         "INSERT INTO vote(ssn,vote_ballot_id,selection)"
         "VALUES (%s, %s, %s)"
     )
-    election_data = (citizen_tc,"12",candidate_keyword)
+    election_data = (citizen_tc,str(election_id),candidate_keyword)
     # Executing the SQL command
     try:
         cursor.execute(sql, election_data)
