@@ -49,7 +49,7 @@ app.secret_key = "not so secret key"
 def ana_index():
     if "election_id" not in session:
         session["election_id"]="Election not configured"
-    return render_template("main_index.html")
+    return render_template("main_index2.html")
 @app.route("/admin_index")
 def loginpage():
     if "admin_login" not in session:

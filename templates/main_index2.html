@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.hizliresim.com/49okbvw.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .menu {
+            list-style-type: none;
+            margin-bottom: 20px;
+        }
+
+        .menu-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .menu-item a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu-item a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1><i class="fa fa-check-square-o" aria-hidden="true"></i> Iris Based Voting System</h1>
+        <form action="/admin_index">
+            <div>
+                <button class="login_button__YbQuC"><i class="fa fa-user" aria-hidden="true"></i> Admin Login</button>
+            </div>
+        </form>
+        <br>
+        <form action="/citizen_tc">
+            <div>
+                <button><i class="fa fa-id-card-o" aria-hidden="true"></i> Citizen Authenticate</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
