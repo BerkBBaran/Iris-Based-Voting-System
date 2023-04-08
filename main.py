@@ -1,39 +1,17 @@
+import base64
+import os
+
 import mysql.connector
 import cv2
 from tkinter import *
 from mysql.connector import Error
 from flask import *
 from tkinter import messagebox
+from PIL import Image
+from io import BytesIO
 from tensorflow.keras.models import load_model
 
 
-def draw_boundary(img,classifier, scaleFactor, minNeighbors,color,text):
-    gray_img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #rgb resimi gray scale image a çeviriyor
-    features = classifier.detectMultiScale(gray_img,scaleFactor,minNeighbors) #uzaktaki yüzün karesini scaleliyor.
-    coords= []
-    for(x,y,w,h) in features:   #karenin kordinatları
-        cv2.rectangle(img,(x,y), (x+w,y+h),color,2)  #rectangle ı belirtilen kordinatlarda çiz
-        cv2.putText(img,text,(x,y-4),cv2.FONT_HERSHEY_SIMPLEX,0.8,color,1,cv2.LINE_AA) #karenin adı
-        coords = [x,y,w,h] #update the cordinates
-    return coords
-def boundary(img,classifier,scaleFactor,minNeighbors):   #görünmez kare, göz resmi çekmek için
-    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    features = classifier.detectMultiScale(gray_img, scaleFactor, minNeighbors)
-    coords = []
-    for (x, y, w, h) in features:  # karenin kordinatları
-        coords = [x, y, w, h]  # update the cordinates
-    return coords
-def detect(img,faceCascade,eyeCascade):
-    color = {"blue" : (255,0,0), "red" : (0,0,255), "green": (0,255,0)} #color dictionary
-    coords = draw_boundary(img,eyeCascade,1.1,10,color["blue"],"Eye") #kareyi çiz
-    #if len(coords) == 4:   #karenin içinde gözleri arıyoruz
-        #roi_img = img[coords[1]:coords[1]+coords[3],coords[0]:coords[0]+coords[2]]
-        #coords = draw_boundary(roi_img,eyeCascade,1.1,10,color["red"], "eyes") #kareyi çiz
-    return img
-def take_eye(img,eyesCascade):
-    coords = boundary(img, eyesCascade, 1.1, 10)
-    roi_img = img[coords[1]:coords[1]+coords[3],coords[0]:coords[0]+coords[2]]
-    return roi_img
 
 STATIC_FOLDER = 'templates/assets'
 app = Flask(__name__,static_folder=STATIC_FOLDER)
@@ -47,8 +25,8 @@ app.secret_key = "not so secret key"
 @app.route("/")   #yorum yaptım, github yükledim, hehee. :)
 @app.route("/index")
 def ana_index():
-    if "election_id" not in session:
-        session["election_id"]="Election not configured"
+    if "TC" in session:
+        session.pop("TC")
     return render_template("main_index.html")
 @app.route("/admin_index")
 def loginpage():
@@ -144,35 +122,21 @@ def manage_election_after():
     return redirect(url_for("show_admin_panel"))
 @app.route("/take_photo",methods=["GET", "POST"])
 def take_photo():
-    citizen_id= request.form.get("TC")
-    session["TC"]=citizen_id
+    data = request.get_json()
+    image_data = data['image']
+    image_data = base64.b64decode(image_data.split(',')[1])
+
+    # Save the image to a file or process it
+    image = Image.open(BytesIO(image_data))
+    image.save(os.path.join('captured-image', 'captured-image.jpg'))
+    return jsonify(success=True)
+@app.route("/take_photo_test",methods=["GET", "POST"])
+def take_photo_test():
+    citizen_id = request.form.get("TC")
     print(citizen_id)
-    return redirect(url_for("show_ongoing"))
-    video_capture = cv2.VideoCapture(0)
-    faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-    eyesCascade = cv2.CascadeClassifier("haarcascade_eye.xml")
+    session["TC"] = citizen_id
 
-
-    eye_png_counter = 0
-
-    while True:
-        _, img = video_capture.read()  # kamerayı açıp img olarak okuyacak.
-        img = detect(img, faceCascade, eyesCascade)
-        cv2.imshow("face detection", img)  # kamerayı göster, içindeki string window un adı
-        if cv2.waitKey(1) & 0xFF == ord('q'):  # klavyeden q tuşuna bastığında kapanıcak
-            img = take_eye(img, eyesCascade)
-            # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # rgb resimi gray scale image a çeviriyor
-            image_name = "eye_{}.png".format(eye_png_counter)  #
-            # image_name = "eye_.png"
-            cv2.imwrite(image_name, img)
-            eye_png_counter += 1
-            break
-    video_capture.release()
-    cv2.destroyAllWindows()
-
-
-
-    return redirect(url_for("citizen_index"))
+    return render_template("take_pic.html")
 @app.route("/create_election")
 def create_election_form():
     return render_template("election.html")
@@ -262,6 +226,5 @@ def register_vote(candidate_id,candidate_keyword,election_id):
         redirect(url_for("ana_index"))
     # Commit your changes in the database
     db.commit()
-    session.pop("TC")
     return redirect(url_for("ana_index"))
 app.run()

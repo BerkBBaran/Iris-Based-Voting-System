@@ -5,50 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webcam Picture Capture</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        h1 {
-            color: #3f51b5;
-            margin-bottom: 30px;
-        }
-
-        video {
-            max-width: 100%;
-            border: 3px solid #3f51b5;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-
-        button {
-            background-color: #3f51b5;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-
-        button:hover {
-            background-color: #283593;
-        }
-
-        canvas {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -56,7 +12,6 @@
     <video id="video" autoplay></video>
     <button id="capture-btn">Capture & Save</button>
     <canvas id="canvas" width="640" height="480"></canvas>
-
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -75,10 +30,23 @@
         captureBtn.addEventListener('click', () => {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataURL = canvas.toDataURL('image/jpeg', 0.8);
-            const link = document.createElement('a');
-            link.href = dataURL;
-            link.download = 'captured-image.jpg';
-            link.click();
+
+            // Sending the image to the Flask route
+            fetch('/take_photo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: dataURL })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Image uploaded successfully:', data);
+                window.location.href = "http://127.0.0.1:5000/show_ongoing_election";
+            })
+            .catch(error => {
+                console.error('Error uploading image:', error);
+            });
         });
     </script>
 </body>
