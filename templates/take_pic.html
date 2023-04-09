@@ -42,7 +42,7 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Image uploaded successfully:', data);
-                window.location.href = "http://127.0.0.1:5000/show_ongoing_election";
+                window.location.href = "http://127.0.0.1:5000/validate_image";
             })
             .catch(error => {
                 console.error('Error uploading image:', error);

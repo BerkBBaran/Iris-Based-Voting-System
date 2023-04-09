@@ -4,12 +4,16 @@ import os
 import mysql.connector
 import cv2
 from tkinter import *
-from mysql.connector import Error
 from flask import *
 from tkinter import messagebox
 from PIL import Image
 from io import BytesIO
-from tensorflow.keras.models import load_model
+
+#iris libraries
+
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 
 
 
@@ -20,6 +24,39 @@ app.secret_key = "not so secret key"
 
 
 # funcs
+#iris funcs
+def preprocess_iris(image, target_size=(224, 224)):
+    resized = cv2.resize(image, target_size)
+    preprocessed = preprocess_input(resized)
+
+    return np.expand_dims(preprocessed, axis=0)
+
+
+def extract_features(image_path, model):
+    image = cv2.imread(image_path)
+    preprocessed_image = preprocess_iris(image)
+
+    features = model.predict(preprocessed_image)
+    return features.squeeze()
+
+
+def cosine_similarity(vec1, vec2):
+    dot_product = np.dot(vec1, vec2)
+    norm1 = np.linalg.norm(vec1)
+    norm2 = np.linalg.norm(vec2)
+    return dot_product / (norm1 * norm2)
+def ValidateImages(image1_path,image2_path):
+    model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
+
+    features1 = extract_features(image1_path, model)
+    features2 = extract_features(image2_path, model)
+
+    similarity = cosine_similarity(features1, features2)
+    print(similarity)
+    threshold = 0.72
+    # ValidateImages('C:/Users/kanar/Documents/GitHub/cng492/ImageDb/b/b3.jpg','C:/Users/kanar/Documents/GitHub/cng492/captured-image/captured-image.jpg')
+    print("Same person?", similarity > threshold)
+    return similarity>threshold
 
 # web functions
 @app.route("/")   #yorum yaptım, github yükledim, hehee. :)
@@ -130,6 +167,15 @@ def take_photo():
     image = Image.open(BytesIO(image_data))
     image.save(os.path.join('captured-image', 'captured-image.jpg'))
     return jsonify(success=True)
+@app.route("/validate_image",methods=["GET", "POST"])
+def validate_image():
+    if ValidateImages('C:/Users/kanar/Documents/GitHub/cng492/ImageDb/b/b1.jpg',
+                      'C:/Users/kanar/Documents/GitHub/cng492/captured-image/captured-image.jpg'):
+        return redirect(url_for('show_ongoing'))
+    else:
+       return redirect(url_for('ana_index'))
+
+
 @app.route("/take_photo_test",methods=["GET", "POST"])
 def take_photo_test():
     citizen_id = request.form.get("TC")
