@@ -53,7 +53,7 @@ def ValidateImages(image1_path,image2_path):
 
     similarity = cosine_similarity(features1, features2)
     print(similarity)
-    threshold = 0.72
+    threshold = 0.7
     # ValidateImages('C:/Users/kanar/Documents/GitHub/cng492/ImageDb/b/b3.jpg','C:/Users/kanar/Documents/GitHub/cng492/captured-image/captured-image.jpg')
     print("Same person?", similarity > threshold)
     return similarity>threshold
@@ -76,7 +76,7 @@ def loginpage():
 
 @app.route("/candidate_add")
 def add_candidate():
-    return render_template("React App.html")
+    return render_template("add_candidate.html")
 @app.route("/login", methods=["GET", "POST"])
 def login():  # does the login operation. Connects with database end checks it. Puts username in to the session if password and username from request matches with DB.
     admin_id = request.form.get("user_name")  # gets user name and password from login form in homepage
@@ -169,7 +169,7 @@ def take_photo():
     return jsonify(success=True)
 @app.route("/validate_image",methods=["GET", "POST"])
 def validate_image():
-    if ValidateImages('C:/Users/kanar/Documents/GitHub/cng492/ImageDb/b/b1.jpg',
+    if ValidateImages('C:/Users/kanar/Documents/GitHub/cng492/ImageDb/b/k1.jpg',
                       'C:/Users/kanar/Documents/GitHub/cng492/captured-image/captured-image.jpg'):
         return redirect(url_for('show_ongoing'))
     else:
