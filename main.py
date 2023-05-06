@@ -188,7 +188,7 @@ def take_photo_test():
     return render_template("take_pic.html")
 @app.route("/create_election")
 def create_election_form():
-    return render_template("election.html")
+    return render_template("election2.html")
 @app.route("/show_elections")
 def show_elections():
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')

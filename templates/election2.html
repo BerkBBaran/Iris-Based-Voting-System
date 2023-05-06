@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+    function validateForm(event) {
+        event.preventDefault();
+        const electionId = document.getElementsByName("election_id")[0];
+        const startTime = document.getElementsByName("s_time")[0];
+        const endTime = document.getElementsByName("e_time")[0];
+        const timeFormat = /^([0-9]{2}):([0-9]{2})$/;
+
+        let formValid = true;
+
+        if (!electionId.value || isNaN(electionId.value)) {
+            showError(electionId, "Please enter a valid number for Election ID.");
+            formValid = false;
+        } else {
+            hideError(electionId);
+        }
+
+        if (!startTime.value || !timeFormat.test(startTime.value)) {
+            showError(startTime, "Please enter a valid start time in the format xx:xx.");
+            formValid = false;
+        } else {
+            hideError(startTime);
+        }
+
+        if (!endTime.value || !timeFormat.test(endTime.value)) {
+            showError(endTime, "Please enter a valid end time in the format xx:xx.");
+            formValid = false;
+        } else {
+            hideError(endTime);
+        }
+
+        if (formValid) {
+            event.target.submit();
+        }
+    }
+
+    function showError(input, message) {
+        if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("error")) {
+            const errorElement = document.createElement("span");
+            errorElement.classList.add("error");
+            errorElement.textContent = message;
+            input.parentNode.insertBefore(errorElement, input.nextSibling);
+        } else {
+            input.nextElementSibling.textContent = message;
+        }
+        input.nextElementSibling.style.display = "block";
+    }
+
+    function hideError(input) {
+        if (input.nextElementSibling && input.nextElementSibling.classList.contains("error")) {
+            input.nextElementSibling.style.display = "none";
+        }
+    }
+</script>
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        button:hover {
+            background-color: #283593;
+        }
+    </style>
+</head>
+<body>
+<body>
+    <form action="/create_election_submit" method="post" onsubmit="validateForm(event)">
+        <label>Election ID</label>
+        <input type="text" placeholder="election id" name="election_id">
+        <label>Start Time</label>
+        <input type="text" name="s_time" placeholder="start time">
+        <label>End Time</label>
+        <input type="text" placeholder="end time" name="e_time">
+        <label>Type</label>
+        <select name="option">
+          <option value="Referendum">Referendum</option>
+          <option value="Presidental">Presidental</option>
+          <option value="Prime Minister">Prime Minister</option>
+        </select>
+        <br>
+        <br>
+        <br>
+        <button class="ui button" type="submit">Submit</button>
+        <a href="/admin_panel"> Go back to admin panel</a>
+    </form>
+</body>
+</body>
+</html>
