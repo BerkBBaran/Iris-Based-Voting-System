@@ -227,23 +227,30 @@ def create_election():
         "INSERT INTO election(id,start_time,end_time,status)"
         "VALUES (%s, %s, %s, %s)"
     )
-    election_data = (election_id,start_date,end_date,"ongoing")
-    # Executing the SQL command
-    cursor.execute(sql,election_data)
-    # Commit your changes in the database
-    db.commit()
+    try:
+        election_data = (election_id, start_date, end_date, "ongoing")
+        # Executing the SQL command
+        cursor.execute(sql, election_data)
+        # Commit your changes in the database
+        db.commit()
 
-    # insert vote ballot
-    sql = (
-        "INSERT INTO vote_ballot(id,election_id,type)"
-        "VALUES (%s, %s, %s )"
-    )
-    vote_ballot_data = (election_id,election_id,option)
-    cursor.execute(sql,vote_ballot_data)
-    db.commit()
+        # insert vote ballot
+        sql = (
+            "INSERT INTO vote_ballot(id,election_id,type)"
+            "VALUES (%s, %s, %s )"
+        )
+        vote_ballot_data = (election_id, election_id, option)
+        cursor.execute(sql, vote_ballot_data)
+        db.commit()
 
-    db.close()
-    return redirect(url_for("show_admin_panel"))
+        db.close()
+        return redirect(url_for("show_admin_panel"))
+    except:
+        error="Election already exists in the database!, Try to add an another election."
+        return render_template("error_hub.html",error=error)
+
+
+
 @app.route("/citizen_tc")
 def get_tc():
     return render_template("get_tc.html")
