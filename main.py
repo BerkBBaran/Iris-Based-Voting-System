@@ -94,11 +94,11 @@ def login():  # does the login operation. Connects with database end checks it. 
                 session["admin_login"]=1
                 return redirect(url_for("show_admin_panel"))
             else:
-                print("wrong password")
-                return redirect(url_for("loginpage"))
+                error = "Wrong admin crediantials, try again."
+                return render_template("error_hub.html", error=error)
         else:
-            print("there is no admin with that username")
-            return redirect(url_for("loginpage"))
+            error = "Wrong admin crediantials, try again."
+            return render_template("error_hub.html", error=error)
 
     if db.is_connected():
         cursor.close()
@@ -123,10 +123,12 @@ def register_candidate():
     )
     data = (fullname+id,ballot_id,fullname,fullname)
     # Executing the SQL command
-    cursor.execute(sql, data)
-    # Commit your changes in the database
-    db.commit()
-    return redirect(url_for("show_admin_panel"))
+    try:
+        cursor.execute(sql, data)
+        db.commit()
+        return redirect(url_for("show_admin_panel"))
+    except:
+        return render_template("error_hub.html", error="Database error check your variables")
 @app.route("/show_ongoing_election")
 def show_ongoing():
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
@@ -169,6 +171,7 @@ def take_photo():
     return jsonify(success=True)
 @app.route("/validate_image",methods=["GET", "POST"])
 def validate_image():
+    return redirect(url_for('show_ongoing'))
     if ValidateImages('C:/Users/kanar/Documents/GitHub/cng492/ImageDb/b/k1.jpg',
                       'C:/Users/kanar/Documents/GitHub/cng492/captured-image/captured-image.jpg'):
         return redirect(url_for('show_ongoing'))
@@ -268,8 +271,8 @@ def register_vote(candidate_id,candidate_keyword,election_id):
     try:
         cursor.execute(sql, election_data)
     except:
-        messagebox.showerror('Voting ERROR', 'You voted already')
-        redirect(url_for("ana_index"))
+        error = "You cant vote on the same election twice"
+        return render_template("error_hub.html", error=error)
     # Commit your changes in the database
     db.commit()
     return redirect(url_for("ana_index"))

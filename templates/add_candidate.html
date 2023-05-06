@@ -57,9 +57,37 @@
             background-color: #283593;
         }
     </style>
+    <script>
+        function validateForm(event) {
+            event.preventDefault();
+
+            const candidateName = document.getElementsByName("candidate_name")[0].value;
+            const id = document.getElementsByName("id")[0].value;
+            const ballot = document.getElementsByName("ballot")[0].value;
+            let errorMessage = "";
+
+            if (!candidateName || candidateName.trim().length === 0) {
+                errorMessage += "Candidate Full Name is required.\n";
+            }
+
+            if (!id || id.trim().length === 0) {
+                errorMessage += "ID is required.\n";
+            }
+
+            if (!ballot || ballot.trim().length === 0) {
+                errorMessage += "Vote ballot ID is required.\n";
+            }
+
+            if (errorMessage) {
+                alert(errorMessage);
+            } else {
+                document.getElementsByTagName("form")[0].submit();
+            }
+        }
+    </script>
 </head>
 <body>
-    <form action="/create_candidate" method="post">
+    <form action="/create_candidate" method="post" onsubmit="validateForm(event)">
         <label>Candidate Full Name</label>
         <input type="text" placeholder="Full Name" name="candidate_name">
         <label>ID</label>

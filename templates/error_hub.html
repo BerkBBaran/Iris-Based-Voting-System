@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body onload="error_function(&quot;{{error}}&quot;)">
+  <script>
+    function error_function(error) {
+        if(error == "You cant vote on the same election twice")
+            {
+                 alert("You cant vote on the same election twice");
+                 window.location.href = "http://127.0.0.1:5000/show_ongoing_election";
+            }
+        if(error == "Wrong admin crediantials, try again.")
+            {
+                  alert("Wrong admin crediantials, try again.")
+                  window.location.href = "http://127.0.0.1:5000/admin_index";
+            }
+        if(error == "Database error check your variables")
+            {
+                  alert("Database error check your variables")
+                  window.location.href = "http://127.0.0.1:5000/candidate_add";
+            }
+    }
+  </script>
+</body>
+</html>
