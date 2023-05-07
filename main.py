@@ -27,7 +27,7 @@ app.secret_key = "not so secret key"
 #iris funcs
 def preprocess_iris(image, target_size=(224, 224)):
     resized = cv2.resize(image, target_size)
-    preprocessed = preprocess_input(resized)
+    #preprocessed = preprocess_input(resized)
 
     return np.expand_dims(preprocessed, axis=0)
 
@@ -46,10 +46,10 @@ def cosine_similarity(vec1, vec2):
     norm2 = np.linalg.norm(vec2)
     return dot_product / (norm1 * norm2)
 def ValidateImages(image1_path,image2_path):
-    model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
+    #model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
 
-    features1 = extract_features(image1_path, model)
-    features2 = extract_features(image2_path, model)
+    #features1 = extract_features(image1_path, model)
+    #features2 = extract_features(image2_path, model)
 
     similarity = cosine_similarity(features1, features2)
     print(similarity)
