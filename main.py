@@ -12,8 +12,8 @@ from io import BytesIO
 #iris libraries
 
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+#import tensorflow as tf
+#from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 
 
 
