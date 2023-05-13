@@ -286,21 +286,23 @@ def register_vote(candidate_id,candidate_keyword,election_id):
 @app.route("/validate_new",methods=["GET", "POST"])
 def validate_new():
     output=verify_db()
-    print(output)
-    return redirect(url_for("ana_index"))
+    if(output==1):
+        return redirect(url_for('show_ongoing'))
+    else:
+        return redirect(url_for("ana_index"))
 def verify_db():
-    image_path = "/src/tests/001_1_1.jpg"
-    script_path = "/src/verifyDB_casia1.py"
+    image_path = "src/tests/001_1_1.jpg"
+    script_path = "src/verifyDB_casia1.py"
 
-    try:
-        result = subprocess.run(
-            ["python", script_path, "--file", image_path],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        output = result.stdout.strip()
+    result = subprocess.run(
+        ["python", script_path, "--file", image_path],
+        capture_output=True,
+        text=True,
+    )
+    result = result.stdout.strip()
+    result=result.split("\n")
+    if(result[2]=="\tsamples found (desc order of reliability):"):
+        return 1
+    else:
         return 0
-    except subprocess.CalledProcessError as e:
-        return e
 app.run()
