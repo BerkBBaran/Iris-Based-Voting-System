@@ -1,6 +1,6 @@
 import base64
 import os
-
+import subprocess
 import mysql.connector
 import cv2
 from tkinter import *
@@ -8,13 +8,13 @@ from flask import *
 from tkinter import messagebox
 from PIL import Image
 from io import BytesIO
+import json
 
 #iris libraries
 
 import numpy as np
 #import tensorflow as tf
 #from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
-
 
 
 STATIC_FOLDER = 'templates/assets'
@@ -283,4 +283,24 @@ def register_vote(candidate_id,candidate_keyword,election_id):
     # Commit your changes in the database
     db.commit()
     return redirect(url_for("ana_index"))
+@app.route("/validate_new",methods=["GET", "POST"])
+def validate_new():
+    output=verify_db()
+    print(output)
+    return redirect(url_for("ana_index"))
+def verify_db():
+    image_path = "/src/tests/001_1_1.jpg"
+    script_path = "/src/verifyDB_casia1.py"
+
+    try:
+        result = subprocess.run(
+            ["python", script_path, "--file", image_path],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        output = result.stdout.strip()
+        return 0
+    except subprocess.CalledProcessError as e:
+        return e
 app.run()
