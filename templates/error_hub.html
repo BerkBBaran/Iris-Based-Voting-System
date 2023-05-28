@@ -27,6 +27,11 @@
                   alert("Election already exists in the database!, Try to add an another election.");
                   window.location.href = "http://127.0.0.1:5000/create_election";
             }
+        if(error == "This person does not have registered iris image.")
+            {
+                  alert("This person does not have registered iris image.");
+                  window.location.href = "http://127.0.0.1:5000/index";
+            }
     }
   </script>
 </body>

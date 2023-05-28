@@ -1,6 +1,7 @@
 import base64
 import os
 import subprocess
+import random
 import mysql.connector
 import cv2
 from tkinter import *
@@ -8,6 +9,10 @@ from flask import *
 from tkinter import messagebox
 from PIL import Image
 from io import BytesIO
+
+import main
+import model
+from model import *
 import json
 
 #iris libraries
@@ -167,7 +172,8 @@ def take_photo():
 
     # Save the image to a file or process it
     image = Image.open(BytesIO(image_data))
-    image.save(os.path.join('captured-image', 'captured-image.jpg'))
+    captured_id=session["TC"] + ".jpg"
+    image.save(os.path.join('captured-image', captured_id))
     return jsonify(success=True)
 @app.route("/validate_image",methods=["GET", "POST"])
 def validate_image():
@@ -285,24 +291,33 @@ def register_vote(candidate_id,candidate_keyword,election_id):
     return redirect(url_for("ana_index"))
 @app.route("/validate_new",methods=["GET", "POST"])
 def validate_new():
-    output=verify_db()
-    if(output==1):
-        return redirect(url_for('show_ongoing'))
-    else:
-        return redirect(url_for("ana_index"))
-def verify_db():
-    image_path = "src/tests/001_1_1.jpg"
-    script_path = "src/verifyDB_casia1.py"
-
-    result = subprocess.run(
-        ["python", script_path, "--file", image_path],
-        capture_output=True,
-        text=True,
-    )
-    result = result.stdout.strip()
-    result=result.split("\n")
-    if(result[2]=="\tsamples found (desc order of reliability):"):
-        return 1
-    else:
-        return 0
-app.run()
+    print("buraya girdim")
+    print(session["TC"])
+    try:
+        highest_similarity, highest_similarity_image=search_single_folder(str(session["TC"]))
+        threshold = 0.65
+        if(highest_similarity>=threshold):
+            return redirect(url_for('show_ongoing'))
+        else:
+            return redirect(url_for("ana_index"))
+    except:
+        error="This person does not have registered iris image."
+        return render_template("error_hub.html", error=error)
+@app.route("/wait_model",methods=["GET", "POST"])
+def wait_model():
+    election_tips = [
+        "Research the candidates and their positions before casting your vote.",
+        "Make sure you are registered to vote and know your polling location.",
+        "Consider the impact of your vote on key issues like healthcare, education, and the economy.",
+        "Encourage your friends and family to exercise their right to vote.",
+        "Stay informed about current events and political developments.",
+        "Volunteer or support organizations that promote voter registration and participation.",
+        "Attend local town halls or debates to learn more about the candidates.",
+        "Understand the voting process in your area, including early voting and mail-in ballot options.",
+        "Engage in respectful discussions with others about different political perspectives.",
+        "Vote not only in national elections but also in local and state-level elections."
+    ]
+    random_tip = random.choice(election_tips)
+    return render_template("wait_model.html",random_tip=random_tip)
+if __name__ == '__main__':
+    app.run()

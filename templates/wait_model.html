@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wait and Route</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      color: #333;
+      margin-top: 50px;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 50px;
+    }
+
+    .content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+    }
+  </style>
+  <script>
+    function waitForBackendAndRoute() {
+      window.location.href = "http://127.0.0.1:5000/validate_new";
+    }
+  </script>
+</head>
+<body onload="waitForBackendAndRoute()">
+  <div class="content">
+    <h1>Please wait</h1>
+    <img src="https://i.gifer.com/786X.gif" alt="Loading GIF" width="300">
+    <p>System is validating your iris...</p>
+    <p>Quick Tip: {{random_tip}}</p>
+  </div>
+</body>
+</html>
