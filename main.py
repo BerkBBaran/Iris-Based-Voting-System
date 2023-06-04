@@ -288,7 +288,8 @@ def register_vote(candidate_id,candidate_keyword,election_id):
         return render_template("error_hub.html", error=error)
     # Commit your changes in the database
     db.commit()
-    return redirect(url_for("ana_index"))
+    msg = "You voted successfully, returning to homepage."
+    return render_template("error_hub.html",error=msg)
 @app.route("/validate_new",methods=["GET", "POST"])
 def validate_new():
     print("buraya girdim")
