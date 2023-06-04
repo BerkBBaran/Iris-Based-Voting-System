@@ -194,8 +194,8 @@ def natural_sort_key(s):
 def get_image_paths(folder_path):
     image_files = [f for f in os.listdir(folder_path) if f.endswith('.jpg')]
     return sorted([os.path.join(folder_path, f) for f in image_files])
-def manual_testing():
-    directory_path = 'CASIA4'
+def manual_testing_same_person():
+    directory_path = 'CASIA1'
     output_file_path = 'output4.txt'
     all_image_paths = []
 
@@ -218,6 +218,37 @@ def manual_testing():
             image_path1, image_path2 = random.sample(all_image_paths, 2)
             # Compare the two images
             compare_with_multiple_images(image_path1, [image_path2], output_file)
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    elapsed_minutes = elapsed_time / 60  # Convert to minutes
+
+    print("Output written to file:", output_file_path)
+    print(f"Elapsed time: {elapsed_minutes} minutes")
+
+    with open(output_file_path, 'a') as output_file:
+        output_file.write(f"\nElapsed time: {elapsed_minutes} minutes\n")
+def manual_testing_different_person():
+    directory_path = 'CASIA1'
+    output_file_path = 'output4.txt'
+    all_image_paths = []
+
+    start_time = time.time()
+
+    with open(output_file_path, 'a') as output_file:
+        prev_image_path = None
+        for folder_name in sorted(os.listdir(directory_path), key=natural_sort_key):
+            folder_path = os.path.join(directory_path, folder_name)
+            if os.path.isdir(folder_path):
+                image_paths = get_image_paths(folder_path)
+                all_image_paths.extend(image_paths)  # Add to the list of all image paths
+                if len(image_paths) > 0:
+                    image_path1 = image_paths[0]
+                    # If there's a previous image, compare it with the first image in the current directory
+                    if prev_image_path is not None:
+                        compare_with_multiple_images(prev_image_path, [image_path1], output_file)
+                    # Update the previous image path for the next iteration
+                    prev_image_path = image_path1
 
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -273,4 +304,4 @@ def search_single_folder(desired_folder):
             return highest_similarity, highest_similarity_image
 
 if __name__ == '__main__':
-    search_single_folder('2')
+    manual_testing_different_person()
