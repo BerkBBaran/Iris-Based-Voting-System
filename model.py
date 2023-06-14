@@ -428,4 +428,13 @@ def search_single_folder(desired_folder):
             return highest_similarity, highest_similarity_image
 
 if __name__ == '__main__':
-    manual_testing_same_person()
+    try:
+        manual_testing_same_person()
+    except Exception as e:
+        print(f"An error occurred in 'manual_testing_same_person': {e}")
+
+    try:
+        manual_testing_different_person()
+    except Exception as e:
+        print(f"An error occurred in 'manual_testing_different_person': {e}")
+
