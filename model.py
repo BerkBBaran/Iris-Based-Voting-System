@@ -1,5 +1,8 @@
 from os import listdir
-
+from datetime import time
+from os import listdir
+import os
+import scipy.io
 from matplotlib import pyplot as plt
 
 from imgutils import *
@@ -99,7 +102,10 @@ def extractFeature(img_filename, eyelashes_threshold=80, multiprocess=True):
     im = cv2.imread(img_filename, 0)
     ciriris, cirpupil, imwithnoise = segment(im, eyelashes_threshold,
                                              multiprocess)
+    ciriris, cirpupil = read_eye_locations(img_filename)
 
+    if ciriris is None or cirpupil is None:
+        return None, None, img_filename
     # normalization
     arr_polar, arr_noise = normalize(imwithnoise, ciriris[1], ciriris[0], ciriris[2],
                                      cirpupil[1], cirpupil[0], cirpupil[2],
@@ -422,4 +428,4 @@ def search_single_folder(desired_folder):
             return highest_similarity, highest_similarity_image
 
 if __name__ == '__main__':
-    manual_testing_different_person()
+    manual_testing_same_person()
