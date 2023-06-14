@@ -502,7 +502,7 @@ def hysthresh(im, T1, T2):
 #########################################################################
 
 
-def normalize(image, x_iris, y_iris, r_iris, x_pupil, y_pupil, r_pupil,
+def normalize(image,x_iris, y_iris, r_iris, x_pupil, y_pupil, r_pupil,
               radpixels, angulardiv):
     """
     Turn a circular region into a rectangular block of NxN dimensions
