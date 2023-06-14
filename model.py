@@ -102,10 +102,11 @@ def extractFeature(img_filename, eyelashes_threshold=80, multiprocess=True):
     im = cv2.imread(img_filename, 0)
     ciriris, cirpupil, imwithnoise = segment(im, eyelashes_threshold,
                                              multiprocess)
-    ciriris, cirpupil = read_eye_locations(img_filename)
-
-    if ciriris is None or cirpupil is None:
-        return None, None, img_filename
+    #for casia 4
+    if not img_filename.startswith('CASIA1'):
+        ciriris, cirpupil = read_eye_locations(img_filename)
+        if ciriris is None or cirpupil is None:
+            return None, None, img_filename
     # normalization
     arr_polar, arr_noise = normalize(imwithnoise, ciriris[1], ciriris[0], ciriris[2],
                                      cirpupil[1], cirpupil[0], cirpupil[2],
@@ -320,7 +321,7 @@ def manual_testing_same_person():
 
 def manual_testing_same_person_cas1():
     directory_path = 'CASIA1'
-    output_file_path = 'output4.txt'
+    output_file_path = 'casia1_same_results.txt'
     all_image_paths = []
 
     start_time = time.time()
@@ -354,7 +355,7 @@ def manual_testing_same_person_cas1():
         output_file.write(f"\nElapsed time: {elapsed_minutes} minutes\n")
 def manual_testing_different_person_cas1():
     directory_path = 'CASIA1'
-    output_file_path = 'output4.txt'
+    output_file_path = 'casia1_different_results.txt'
     all_image_paths = []
 
     start_time = time.time()
@@ -435,6 +436,15 @@ if __name__ == '__main__':
 
     try:
         manual_testing_different_person()
+    except Exception as e:
+        print(f"An error occurred in 'manual_testing_different_person': {e}")
+    try:
+        manual_testing_different_person_cas1()
+    except Exception as e:
+        print(f"An error occurred in 'manual_testing_same_person': {e}")
+
+    try:
+        manual_testing_same_person_cas1()
     except Exception as e:
         print(f"An error occurred in 'manual_testing_different_person': {e}")
 

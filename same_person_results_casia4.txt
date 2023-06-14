@@ -30,3 +30,5 @@ Similarity between casia4_images\001\S1001L01.jpg and casia4_images\001\S1001L04
 Similarity between casia4_images\001\S1001L01.jpg and casia4_images\001\S1001L05.jpg: 0.5276838546069316
 Similarity between casia4_images\001\S1001L01.jpg and casia4_images\001\S1001L02.jpg: 0.5997454661151767
 Similarity between casia4_images\001\S1001L01.jpg and casia4_images\001\S1001L03.jpg: 0.6867121848739496
+Similarity between casia4_images\001\S1001L01.jpg and casia4_images\001\S1001L02.jpg: 0.5997454661151767
+Similarity between casia4_images\001\S1001L01.jpg and casia4_images\001\S1001L03.jpg: 0.6867121848739496
