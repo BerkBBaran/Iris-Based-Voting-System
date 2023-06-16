@@ -283,7 +283,8 @@ def register_vote(candidate_id,candidate_keyword,election_id):
     # Executing the SQL command
     try:
         cursor.execute(sql, election_data)
-    except:
+    except Exception as e:
+        print(e)
         error = "You cant vote on the same election twice"
         return render_template("error_hub.html", error=error)
     # Commit your changes in the database
@@ -296,7 +297,7 @@ def validate_new():
     print(session["TC"])
     try:
         highest_similarity, highest_similarity_image=search_single_folder(str(session["TC"]))
-        threshold = 0.65
+        threshold = 0.60
         if(highest_similarity>=threshold):
             return redirect(url_for('show_ongoing'))
         else:
