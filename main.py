@@ -81,7 +81,14 @@ def loginpage():
 
 @app.route("/candidate_add")
 def add_candidate():
-    return render_template("add_candidate.html")
+    db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
+    cursor = db.cursor()
+    cursor.execute("SELECT id FROM election WHERE status != 'ongoing' ")
+    records = cursor.fetchall()
+    for data in records:
+        print(data)
+    elections = [data[0] for data in records]
+    return render_template("add_candidate.html",elections=elections)
 @app.route("/login", methods=["GET", "POST"])
 def login():  # does the login operation. Connects with database end checks it. Puts username in to the session if password and username from request matches with DB.
     admin_id = request.form.get("user_name")  # gets user name and password from login form in homepage
@@ -116,9 +123,10 @@ def show_admin_panel():
         return redirect(url_for(loginpage))
 @app.route("/create_candidate",methods=["GET", "POST"])
 def register_candidate():
-    id = request.form.get("id")
-    ballot_id = request.form.get("ballot")
+    ballot_id = request.form.get("election_select")
     fullname = request.form.get("candidate_name")
+    print(ballot_id)
+    print(fullname)
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     # insert election
@@ -126,7 +134,7 @@ def register_candidate():
         "INSERT INTO president(id,vote_ballot_id,fullname,keyword)"
         "VALUES (%s, %s, %s, %s)"
     )
-    data = (fullname+id,ballot_id,fullname,fullname)
+    data = (fullname,ballot_id,fullname,fullname)
     # Executing the SQL command
     try:
         cursor.execute(sql, data)

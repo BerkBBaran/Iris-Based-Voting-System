@@ -58,20 +58,15 @@
         }
     </style>
     <script>
-        function validateForm(event) {
+        function validateAndSubmit(event) {
             event.preventDefault();
 
             const candidateName = document.getElementsByName("candidate_name")[0].value;
-            const id = document.getElementsByName("id")[0].value;
-            const ballot = document.getElementsByName("ballot")[0].value;
+            const ballot = document.getElementsByName("election_select")[0].value;
             let errorMessage = "";
 
             if (!candidateName || candidateName.trim().length === 0) {
                 errorMessage += "Candidate Full Name is required.\n";
-            }
-
-            if (!id || id.trim().length === 0) {
-                errorMessage += "ID is required.\n";
             }
 
             if (!ballot || ballot.trim().length === 0) {
@@ -81,19 +76,23 @@
             if (errorMessage) {
                 alert(errorMessage);
             } else {
-                document.getElementsByTagName("form")[0].submit();
+                const form = document.getElementById('candidateForm');
+                form.submit();
             }
         }
     </script>
+
 </head>
 <body>
-    <form action="/create_candidate" method="post" onsubmit="validateForm(event)">
+    <form action="/create_candidate" method="post" id="candidateForm" onsubmit="validateAndSubmit(event)">
         <label>Candidate Full Name</label>
         <input type="text" placeholder="Full Name" name="candidate_name">
-        <label>ID</label>
-        <input type="text" name="id" placeholder="ID">
         <label>Vote ballot ID</label>
-        <input type="text" placeholder="ID" name="ballot">
+        <select name="election_select" id=select>
+            {% for election_id in elections %}
+            <option value="{{election_id}}">{{election_id}}</option>
+            {% endfor %}
+        </select>
         <button class="ui button" type="submit">Submit</button>
     </form>
 </body>
