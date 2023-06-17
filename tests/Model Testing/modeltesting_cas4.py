@@ -21,7 +21,7 @@ def read_similarity(file):
     return df
 
 # Read similarity data from the text file
-df = read_similarity('casia4_results.txt')
+df = read_similarity('full_results_casia4.txt')
 
 # Add 'same_person' column with binary values indicating whether files belong to the same person
 # Modify this part according to your data and criteria for determining 'same_person'
@@ -42,7 +42,7 @@ def calculate_FAR_FRR(df, similarity_col, same_person_col, threshold):
 
 
 # Read similarity data from the text file
-df = read_similarity('casia4_results.txt')
+df = read_similarity('full_results_casia4.txt')
 
 # Add 'same_person' column with binary values indicating whether files belong to the same person
 # Modify this part according to your data and criteria for determining 'same_person'

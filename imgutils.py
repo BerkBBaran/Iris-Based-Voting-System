@@ -188,7 +188,7 @@ def segment(eyeim, eyelashes_thres=80, use_multiprocess=True):
         icu = imsz[1] - 1
     imageiris = eyeim[irl: iru + 1, icl: icu + 1]
 
-    # using muiltiprocessingh
+    # using muiltiprocessing
     if use_multiprocess:
         ret_top = mp.Manager().dict()
         ret_bot = mp.Manager().dict()
