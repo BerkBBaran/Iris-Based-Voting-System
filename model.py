@@ -21,6 +21,7 @@ import time
 
 warnings.filterwarnings("ignore")
 
+
 ##########################################################################
 #  Function which generate the iris template using in the matching
 ##########################################################################
@@ -54,6 +55,8 @@ def encode_iris(arr_polar, arr_noise, minw_length, mult, sigma_f):
         mask_noise[:, ja + 1] = arr_noise[:, i] | H3[:, i]
 
     return template, mask_noise
+
+
 def gaborconvolve_f(img, minw_length, mult, sigma_f):
     """
     Convolve each row of an imgage with 1D log-Gabor filters.
@@ -102,7 +105,7 @@ def extractFeature(img_filename, eyelashes_threshold=80, multiprocess=True):
     im = cv2.imread(img_filename, 0)
     ciriris, cirpupil, imwithnoise = segment(im, eyelashes_threshold,
                                              multiprocess)
-    #for casia 4
+    # for casia 4
     if not img_filename.startswith('CASIA1'):
         ciriris, cirpupil = read_eye_locations(img_filename)
         if ciriris is None or cirpupil is None:
@@ -117,6 +120,7 @@ def extractFeature(img_filename, eyelashes_threshold=80, multiprocess=True):
                                        sigma_f)
 
     return template, mask_noise, img_filename
+
 
 def HammingDistance(template1, mask1, template2, mask2):
     """
@@ -147,7 +151,6 @@ def HammingDistance(template1, mask1, template2, mask2):
     return hd
 
 
-
 def shiftbits_ham(template, noshifts):
     """
     Shift the bit-wise iris patterns.
@@ -174,10 +177,10 @@ def shiftbits_ham(template, noshifts):
 
     return templatenew
 
+
 def compare_with_multiple_images(image_path, other_image_paths, output_file):
     # Extract features from the input image
     template1, mask1, _ = extractFeature(image_path)
-
     if template1 is None or mask1 is None:
         print(f"Skipping image {image_path} due to missing .mat file.")
         return  # Return early to avoid the rest of the function
@@ -202,13 +205,59 @@ def compare_with_multiple_images(image_path, other_image_paths, output_file):
         output_file.write(output_line + '\n')
         output_file.flush()  # Flush the buffer to immediately write to the file
 
+def compare_with_multiple_images_readyfeatures_CASIA1(image_path, other_image_paths, output_file):
+    # Extract features from the input image
+    #template1, mask1, _ = extractFeature(image_path)
+    template1, mask1= get_features(image_path)
+    if template1 is None or mask1 is None:
+        print(f"Skipping image {image_path} due to missing .mat file.")
+        return  # Return early to avoid the rest of the function
 
+    # Calculate similarity with each other image
+    for path in other_image_paths:
+        # Extract features from the current image
+        template2, mask2, _ = extractFeature(path)
+
+        if template2 is None or mask2 is None:
+            print(f"Skipping comparison with image {path} due to missing .mat file.")
+            continue  # Continue to the next image
+
+        # Calculate the Hamming distance between the iris templates
+        hamming_distance = HammingDistance(template1, mask1, template2, mask2)
+
+        # Calculate similarity as the inverse of the Hamming distance
+        similarity = 1.0 - hamming_distance
+
+        output_line = f"Similarity between {image_path} and {path}: {similarity}"
+        print(output_line)
+        output_file.write(output_line + '\n')
+        output_file.flush()  # Flush the buffer to immediately write to the file
+
+def get_features(image_path):
+    # Get the base filename without extension
+    base_filename = os.path.splitext(os.path.basename(image_path))[0]
+
+    # Get the first three characters of the filename
+    folder_number = base_filename[:3]
+
+    # Construct the paths to the .npy files
+    template_path = os.path.join('CASIA1_Features', folder_number, base_filename + '_template.npy')
+    mask_path = os.path.join('CASIA1_Features', folder_number, base_filename + '_mask.npy')
+
+    # Load the arrays from the .npy files
+    template = np.load(template_path)
+    mask = np.load(mask_path)
+
+    return template, mask
 def natural_sort_key(s):
     return [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', s)]
+
 
 def get_image_paths(folder_path):
     image_files = [f for f in os.listdir(folder_path) if f.endswith('.jpg')]
     return sorted([os.path.join(folder_path, f) for f in image_files])
+
+
 def find_mat_file(image_path, casia4_locations_dir):
     # Extract the base filename from the path
     base_filename = os.path.basename(image_path)
@@ -223,9 +272,11 @@ def find_mat_file(image_path, casia4_locations_dir):
 
     # If we got this far, the file wasn't found
     return None
+
+
 def read_eye_locations(image_name):
     # Find the .mat file path
-    mat_file_path = find_mat_file(image_name,"casia4_locations")
+    mat_file_path = find_mat_file(image_name, "casia4_locations")
 
     if mat_file_path is None:
         print(f"No .mat file found for image {image_name}")
@@ -238,11 +289,13 @@ def read_eye_locations(image_name):
     circleiris = mat['circleiris']  # x,y,r locations
     circlepupil = mat['circlepupil']  # x,y,r locations
 
-    circleiris= circleiris.flatten()
-    circlepupil=circlepupil.flatten()
+    circleiris = circleiris.flatten()
+    circlepupil = circlepupil.flatten()
 
     # Return the variables
     return circleiris, circlepupil
+
+
 def manual_testing_different_person():
     directory_path = 'casia4_images'
     output_file_path = 'different_person_results_casia4.txt'
@@ -278,6 +331,7 @@ def manual_testing_different_person():
 
     with open(output_file_path, 'a') as output_file:
         output_file.write(f"\nElapsed time: {elapsed_minutes} minutes\n")
+
 
 def manual_testing_same_person():
     directory_path = 'casia4_images'
@@ -319,6 +373,41 @@ def manual_testing_same_person():
         output_file.write(f"\nElapsed time: {elapsed_minutes} minutes\n")
 
 
+def save_arrays(template1, mask1, template_path, mask_path):
+    np.save(template_path, template1)
+    np.save(mask_path, mask1)
+
+
+def extract_and_save_features(directory_path, output_directory_path):
+    all_image_paths = []
+    prev_image_path = None
+    for folder_name in sorted(os.listdir(directory_path), key=natural_sort_key):
+        folder_path = os.path.join(directory_path, folder_name)
+        if os.path.isdir(folder_path):
+            image_paths = get_image_paths(folder_path)
+            all_image_paths.extend(image_paths)  # Add to the list of all image paths
+            for image_path1 in image_paths:
+                # Update the previous image path for the next iteration
+                prev_image_path = image_path1
+
+                # Construct the output folder path based on the first three characters of the filename
+                base_filename = os.path.splitext(os.path.basename(prev_image_path))[
+                    0]  # Get the base filename without extension
+                folder_number = base_filename[:3]  # Get the first three characters of the filename
+                output_folder_path = os.path.join(output_directory_path, folder_number)
+                os.makedirs(output_folder_path, exist_ok=True)  # Create the output directory if it doesn't exist
+
+                # If there's a previous image, extract its features and save them
+                try:
+                    template1, mask1, _ = extractFeature(prev_image_path)
+                    template_path = os.path.join(output_folder_path, base_filename + '_template.npy')
+                    mask_path = os.path.join(output_folder_path, base_filename + '_mask.npy')
+                    save_arrays(template1, mask1, template_path, mask_path)
+                except FileNotFoundError:
+                    print(f"Could not find file for image {prev_image_path}. Skipping this image.")
+                    continue
+
+
 def manual_testing_same_person_cas1():
     directory_path = 'CASIA1'
     output_file_path = 'casia1_same_results.txt'
@@ -335,14 +424,8 @@ def manual_testing_same_person_cas1():
                 if len(image_paths) > 1:
                     image_path1 = image_paths[0]
                     other_image_paths = image_paths[1:]
-                    compare_with_multiple_images(image_path1, other_image_paths, output_file)
+                    compare_with_multiple_images_readyfeatures_CASIA1(image_path1, other_image_paths, output_file)
 
-        # Randomly compare images from different folders
-        for _ in range(100):
-            # Randomly select two different image paths
-            image_path1, image_path2 = random.sample(all_image_paths, 2)
-            # Compare the two images
-            compare_with_multiple_images(image_path1, [image_path2], output_file)
 
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -353,6 +436,8 @@ def manual_testing_same_person_cas1():
 
     with open(output_file_path, 'a') as output_file:
         output_file.write(f"\nElapsed time: {elapsed_minutes} minutes\n")
+
+
 def manual_testing_different_person_cas1():
     directory_path = 'CASIA1'
     output_file_path = 'casia1_different_results.txt'
@@ -371,7 +456,7 @@ def manual_testing_different_person_cas1():
                     image_path1 = image_paths[0]
                     # If there's a previous image, compare it with the first image in the current directory
                     if prev_image_path is not None:
-                        compare_with_multiple_images(prev_image_path, [image_path1], output_file)
+                        compare_with_multiple_images_readyfeatures_CASIA1(prev_image_path, [image_path1], output_file)
                     # Update the previous image path for the next iteration
                     prev_image_path = image_path1
 
@@ -384,6 +469,7 @@ def manual_testing_different_person_cas1():
 
     with open(output_file_path, 'a') as output_file:
         output_file.write(f"\nElapsed time: {elapsed_minutes} minutes\n")
+
 
 def get_highest_similarity(image_path, other_image_paths):
     # Extract features from the input image
@@ -428,7 +514,8 @@ def search_single_folder(desired_folder):
 
             return highest_similarity, highest_similarity_image
 
-if __name__ == '__main__':
+
+def notepad_result_generator():
     try:
         manual_testing_same_person()
     except Exception as e:
@@ -448,3 +535,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"An error occurred in 'manual_testing_different_person': {e}")
 
+
+if __name__ == '__main__':
+    #extract_and_save_features('CASIA1', 'CASIA1_Features')
+    manual_testing_different_person_cas1()

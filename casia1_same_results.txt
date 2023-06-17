@@ -1,0 +1,7 @@
+Similarity between CASIA1\1\001_1_2.jpg and CASIA1\1\001_1_3.jpg: 0.7687587168758717
+Similarity between CASIA1\1\001_1_2.jpg and CASIA1\1\001_2_1.jpg: 0.6864724545716758
+Similarity between CASIA1\1\001_1_1.jpg and CASIA1\1\001_1_2.jpg: 0.7142053445850914
+Similarity between CASIA1\1\001_1_1.jpg and CASIA1\1\001_1_3.jpg: 0.7687587168758717
+Similarity between CASIA1\1\001_1_1.jpg and CASIA1\1\001_2_1.jpg: 0.6864724545716758
+Similarity between CASIA1\1\001_1_1.jpg and CASIA1\1\001_2_2.jpg: 0.7597148448420464
+Similarity between CASIA1\1\001_1_1.jpg and CASIA1\1\001_2_3.jpg: 0.7182097044060234

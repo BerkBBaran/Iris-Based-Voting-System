@@ -1,0 +1,3 @@
+Similarity between CASIA1\1\001_1_1.jpg and CASIA1\2\002_1_1.jpg: 0.5513914656771799
+Similarity between CASIA1\2\002_1_1.jpg and CASIA1\3\003_1_1.jpg: 0.535385500575374
+Similarity between CASIA1\3\003_1_1.jpg and CASIA1\4\004_1_1.jpg: 0.49431009957325744
