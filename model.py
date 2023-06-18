@@ -480,8 +480,8 @@ def get_highest_similarity(image_path, other_image_paths):
 
     # Calculate similarity with each other image
     for path in other_image_paths:
-        # Extract features from the current image
-        template2, mask2, _ = extractFeature(path)
+        # Get pre-extracted features from the current image
+        template2, mask2= get_features(image_path)
 
         # Calculate the Hamming distance between the iris templates
         hamming_distance = HammingDistance(template1, mask1, template2, mask2)
