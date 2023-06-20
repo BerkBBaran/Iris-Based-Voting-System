@@ -1,16 +1,7 @@
-from os import listdir
 from datetime import time
-from os import listdir
-import os
 import scipy.io
-from matplotlib import pyplot as plt
-
 from imgutils import *
-from multiprocessing import Pool, cpu_count
-from itertools import repeat
-from fnmatch import filter
 import numpy as np
-import scipy.io as sio
 import os
 import warnings
 import cv2
@@ -89,7 +80,7 @@ def gaborconvolve_f(img, minw_length, mult, sigma_f):
 ##########################################################################
 # Function to extract the feature for the matching process
 ##########################################################################
-def extractFeature(img_filename, eyelashes_threshold=80, multiprocess=True):
+def extractFeature(img_filename, multiprocess=True):
     """
     Extract features from an iris image
     """
@@ -234,6 +225,7 @@ def compare_with_multiple_images_readyfeatures_CASIA1(image_path, other_image_pa
         output_file.flush()  # Flush the buffer to immediately write to the file
 
 def get_features(image_path):
+
     # Get the base filename without extension
     base_filename = os.path.splitext(os.path.basename(image_path))[0]
 
@@ -481,14 +473,11 @@ def get_highest_similarity(image_path, other_image_paths):
     # Calculate similarity with each other image
     for path in other_image_paths:
         # Get pre-extracted features from the current image
-        template2, mask2= get_features(image_path)
-
+        template2, mask2= get_features(path)
         # Calculate the Hamming distance between the iris templates
         hamming_distance = HammingDistance(template1, mask1, template2, mask2)
-
         # Calculate similarity as the inverse of the Hamming distance
         similarity = 1.0 - hamming_distance
-
         # Check if this similarity is higher than the highest found so far
         if similarity > highest_similarity:
             highest_similarity = similarity

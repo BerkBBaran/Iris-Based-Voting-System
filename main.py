@@ -1,67 +1,15 @@
 import base64
-import os
-import subprocess
-import random
 import mysql.connector
-import cv2
 from tkinter import *
 from flask import *
-from tkinter import messagebox
 from PIL import Image
 from io import BytesIO
-
-import main
-import model
 from model import *
-import json
-
-#iris libraries
-
-import numpy as np
-#import tensorflow as tf
-#from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
-
 
 STATIC_FOLDER = 'templates/assets'
 app = Flask(__name__,static_folder=STATIC_FOLDER)
-
 app.secret_key = "not so secret key"
 
-
-# funcs
-#iris funcs
-def preprocess_iris(image, target_size=(224, 224)):
-    resized = cv2.resize(image, target_size)
-    #preprocessed = preprocess_input(resized)
-
-    return np.expand_dims(preprocessed, axis=0)
-
-
-def extract_features(image_path, model):
-    image = cv2.imread(image_path)
-    preprocessed_image = preprocess_iris(image)
-
-    features = model.predict(preprocessed_image)
-    return features.squeeze()
-
-
-def cosine_similarity(vec1, vec2):
-    dot_product = np.dot(vec1, vec2)
-    norm1 = np.linalg.norm(vec1)
-    norm2 = np.linalg.norm(vec2)
-    return dot_product / (norm1 * norm2)
-def ValidateImages(image1_path,image2_path):
-    #model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
-
-    #features1 = extract_features(image1_path, model)
-    #features2 = extract_features(image2_path, model)
-
-    similarity = cosine_similarity(features1, features2)
-    print(similarity)
-    threshold = 0.7
-    # ValidateImages('C:/Users/kanar/Documents/GitHub/cng492/ImageDb/b/b3.jpg','C:/Users/kanar/Documents/GitHub/cng492/captured-image/captured-image.jpg')
-    print("Same person?", similarity > threshold)
-    return similarity>threshold
 
 # web functions
 @app.route("/")   #yorum yaptım, github yükledim, hehee. :)
@@ -301,7 +249,6 @@ def register_vote(candidate_id,candidate_keyword,election_id):
     return render_template("error_hub.html",error=msg)
 @app.route("/validate_new",methods=["GET", "POST"])
 def validate_new():
-    print("buraya girdim")
     print(session["TC"])
     try:
         highest_similarity, highest_similarity_image=search_single_folder(str(session["TC"]))
