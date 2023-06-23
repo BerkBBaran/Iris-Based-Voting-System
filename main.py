@@ -34,7 +34,7 @@ def add_candidate():
         return redirect(url_for('ana_index'))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
-    cursor.execute("SELECT id FROM election WHERE status != 'ongoing' ")
+    cursor.execute("SELECT vb.id AS vote_ballot_id FROM vote_ballot vb JOIN election e ON vb.election_id = e.id WHERE e.status = 'ongoing';")
     records = cursor.fetchall()
     for data in records:
         print(data)
@@ -74,32 +74,48 @@ def show_admin_panel():
         return redirect(url_for("ana_index"))
 @app.route("/create_candidate",methods=["GET", "POST"])
 def register_candidate():
-    ballot_id = request.form.get("election_select")
+    vote_ballot_id = request.form.get("election_select")
     fullname = request.form.get("candidate_name")
-    print(ballot_id)
-    print(fullname)
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
-    # insert election
-    sql = (
-        "INSERT INTO president(id,vote_ballot_id,fullname,keyword)"
-        "VALUES (%s, %s, %s, %s)"
-    )
-    data = (fullname,ballot_id,fullname,fullname)
+    cursor.execute("SELECT type FROM vote_ballot WHERE id = %s",(vote_ballot_id,))
+    result = cursor.fetchone()[0]
+
+    print("test",result)
+    if result == 'Prime Minister':
+        sql = (
+            "INSERT INTO prime_minister(id,vote_ballot_id,fullname)"
+            "VALUES (%s, %s, %s)"
+        )
+        data = (fullname+' '+vote_ballot_id, vote_ballot_id, fullname)
+    elif result == "Referendum":
+        sql = (
+            "INSERT INTO choice(id,vote_ballot_id,fullname)"
+            "VALUES (%s, %s, %s)"
+        )
+        data = (fullname+' '+vote_ballot_id, vote_ballot_id, fullname)
+    else:
+        sql = (
+            "INSERT INTO president(id,vote_ballot_id,fullname)"
+            "VALUES (%s, %s, %s)"
+        )
+        data = (fullname+' '+vote_ballot_id, vote_ballot_id,fullname)
+
     # Executing the SQL command
     try:
         cursor.execute(sql, data)
         db.commit()
         return redirect(url_for("show_admin_panel"))
-    except:
-        return render_template("error_hub.html", error="Database error check your variables")
+    except Exception as e:
+        print("a")
+        return render_template("error_hub.html", error="Database error, please check your variables.")
 @app.route("/show_ongoing_election")
 def show_ongoing():
     if "TC" not in session:
         return redirect(url_for("ana_index"))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
-    cursor.execute("SELECT id FROM election WHERE status='ongoing' ")
+    cursor.execute("SELECT vb.id AS vote_ballot_id FROM vote_ballot vb JOIN election e ON vb.election_id = e.id WHERE e.status = 'ongoing';")
     ongoing_elections = cursor.fetchall()
     return render_template("ongoing_elections.html",elections=ongoing_elections)
 @app.route("/admin_logout")
@@ -192,8 +208,8 @@ def show_election_result(election_id):
     results = {}
     for vote in records:
         if vote[2] not in results:
-            results[str(vote[2])]=0
-        results[str(vote[2])]+=1
+            results[str(vote[2]).split()[0]]=0
+        results[str(vote[2]).split()[0]]+=1
     labels = []
     values = []
     for key in results.keys():
@@ -226,7 +242,7 @@ def create_election():
             "INSERT INTO vote_ballot(id,election_id,type)"
             "VALUES (%s, %s, %s )"
         )
-        vote_ballot_data = (election_id+option, election_id, option)
+        vote_ballot_data = (election_id, election_id, option)
         cursor.execute(sql, vote_ballot_data)
         db.commit()
 
@@ -240,18 +256,35 @@ def get_tc():
     return render_template("get_tc.html")
 @app.route("/citizen_index/<election_id>")
 def citizen_index(election_id):
+    vote_ballot_id=election_id
     if "TC" not in session:
         return redirect(url_for("ana_index"))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
-    print(election_id)
-    cursor.execute("SELECT * FROM president WHERE vote_ballot_id = %s", (election_id,))
-    records = cursor.fetchall()
-    return render_template("citizen_index.html",candidates=records)
-@app.route("/register_vote/<candidate_id>/<candidate_keyword>/<election_id>")
-def register_vote(candidate_id,candidate_keyword,election_id):
+
+    cursor.execute("SELECT fullname,id,vote_ballot_id FROM president WHERE vote_ballot_id = %s", (vote_ballot_id,))
+    president_results = cursor.fetchall()
+
+    # Search the choice table
+    cursor.execute("SELECT fullname,id,vote_ballot_id FROM choice WHERE vote_ballot_id = %s", (vote_ballot_id,))
+    choice_results = cursor.fetchall()
+    print(choice_results)
+
+    # Search the prime_minister table
+    cursor.execute("SELECT fullname,id,vote_ballot_id FROM prime_minister WHERE vote_ballot_id = %s", (vote_ballot_id,))
+    prime_minister_results = cursor.fetchall()
+
+    combined_results = []
+    combined_results.extend(president_results)
+    combined_results.extend(choice_results)
+    combined_results.extend(prime_minister_results)
+    print(combined_results)
+
+    return render_template("citizen_index.html",candidates= combined_results)
+@app.route("/register_vote/<candidate_fullname>/<candidate_id>/<vote_ballot_id>")
+def register_vote(candidate_fullname,candidate_id,vote_ballot_id):
     citizen_tc = session["TC"]
-    print(citizen_tc,candidate_id,candidate_keyword)
+    print(citizen_tc,candidate_id)
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     # insert election
@@ -259,7 +292,7 @@ def register_vote(candidate_id,candidate_keyword,election_id):
         "INSERT INTO vote(ssn,vote_ballot_id,selection)"
         "VALUES (%s, %s, %s)"
     )
-    election_data = (citizen_tc,str(election_id),candidate_keyword)
+    election_data = (citizen_tc,str(vote_ballot_id),candidate_id)
     # Executing the SQL command
     try:
         cursor.execute(sql, election_data)

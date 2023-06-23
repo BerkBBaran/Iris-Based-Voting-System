@@ -63,12 +63,11 @@
         </tr>
         {% for candidate in candidates %}
         <tr>
-            <td>{{candidate[2]}}</td>
-            <td><a href="/register_vote/{{candidate[0]}}/{{candidate[3]}}/{{candidate[1]}}">Vote</a></td>
+            <td>{{candidate[0]}}</td>
+            <td><a href="/register_vote/{{candidate[0]}}/{{candidate[1]}}/{{candidate[2]}}">Vote</a></td>
         </tr>
         {% endfor %}
     </table>
-    <p>Election: 2023 , Presidental</p>
     <p><a href="/">Exit</a></p>
 </body>
 </html>
