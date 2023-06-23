@@ -47,6 +47,17 @@
                   alert("This citizen ID does not exists.");
                   window.location.href = "http://127.0.0.1:5000/citizen_tc";
            }
+        if(error == "login success")
+           {
+                  alert("login success");
+                  alert({{sim}});
+                  window.location.href = "http://127.0.0.1:5000/test";
+           }
+        if(error == "login failed")
+           {
+                  alert("login failed");
+                  window.location.href = "http://127.0.0.1:5000/test";
+           }
     }
   </script>
 </body>

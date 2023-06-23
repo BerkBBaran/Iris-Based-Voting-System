@@ -284,6 +284,24 @@ def validate_new():
     except:
         error="This person does not have registered iris image."
         return render_template("error_hub.html", error=error)
+@app.route("/validate_new_test",methods=["GET", "POST"])
+def validate_new_test():
+    entered_id = request.form.get("id")
+    selected_image = request.form.get("image")
+    print(entered_id)
+    print(selected_image)
+    try:
+        highest_similarity, highest_similarity_image=search_single_folder_test(str(entered_id),str(selected_image))
+        threshold = 0.60
+        if(highest_similarity>=threshold):
+            error = "login success"
+            return render_template("error_hub.html", error=error,sim=str(highest_similarity))
+        else:
+            error = "login failed"
+            return render_template("error_hub.html", error=error, sim=str(highest_similarity))
+    except:
+        error="This person does not have registered iris image."
+        return render_template("error_hub.html", error=error)
 @app.route("/wait_model",methods=["GET", "POST"])
 def wait_model():
     if "TC" not in session:

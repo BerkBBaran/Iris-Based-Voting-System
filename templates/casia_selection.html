@@ -24,21 +24,25 @@
 </head>
 <body>
   <h1>Select an Image</h1>
-  <div class="image-container">
-    <img src=https://img.imgyukle.com/2023/06/23/rcmZvH.jpeg alt="Image 1"><br>
-    <a>Person with ID1</a><br>
-    <input type="radio" name="image" value="1">
-  </div>
-  <div class="image-container">
-    <img src=https://img.imgyukle.com/2023/06/23/rcm6C1.jpeg alt="Image 2"><br>
-    <a>Person with ID2</a><br>
-    <input type="radio" name="image" value="2">
-  </div>
-  <div class="image-container">
-    <img src=https://img.imgyukle.com/2023/06/23/rcm9sI.jpeg alt="Image 3"><br>
-    <a>Person with ID3</a><br>
-    <input type="radio" name="image" value="3">
-  </div><br>
-  <button id="send-button">Send</button>
+  <form action="/validate_new_test" method="post">
+    <div class="image-container">
+      <img src=https://img.imgyukle.com/2023/06/23/rcmZvH.jpeg alt="Image 1"><br>
+      <a>Person with ID1</a><br>
+      <input type="radio" name="image" value="1">
+    </div>
+    <div class="image-container">
+      <img src=https://img.imgyukle.com/2023/06/23/rcm6C1.jpeg alt="Image 2"><br>
+      <a>Person with ID2</a><br>
+      <input type="radio" name="image" value="2">
+    </div>
+    <div class="image-container">
+      <img src=https://img.imgyukle.com/2023/06/23/rcm9sI.jpeg alt="Image 3"><br>
+      <a>Person with ID3</a><br>
+      <input type="radio" name="image" value="3">
+    </div><br>
+    <label for="id">Enter Your ID:</label>
+    <input type="text" name="id" id="id"><br>
+    <button id="send-button">Send</button>
+  </form>
 </body>
 </html>

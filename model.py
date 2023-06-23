@@ -502,7 +502,26 @@ def search_single_folder(desired_folder):
             print(f"Highest similarity is {highest_similarity} found in image {highest_similarity_image}")
 
             return highest_similarity, highest_similarity_image
+def search_single_folder_test(desired_folder,selected_image):
+    directory_path = 'CASIA1'
+    all_image_paths = []
+    selected_image_path=os.path.join(directory_path, selected_image)
+    folder_path = os.path.join(directory_path, desired_folder)
+    if os.path.isdir(folder_path):
+        image_paths = get_image_paths(folder_path)
+        all_image_paths.extend(image_paths)  # Add to the list of all image paths
 
+        selected_image_paths = get_image_paths(selected_image_path)
+        selected_image_paths.extend(selected_image_paths)
+        if len(image_paths) > 1:
+            image_path1 = selected_image_paths[0]
+            other_image_paths = image_paths[1:]
+            print(image_path1)
+            highest_similarity, highest_similarity_image = get_highest_similarity(image_path1, other_image_paths)
+
+            print(f"Highest similarity is {highest_similarity} found in image {highest_similarity_image}")
+
+            return highest_similarity, highest_similarity_image
 
 def notepad_result_generator():
     try:
