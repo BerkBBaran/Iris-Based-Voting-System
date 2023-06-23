@@ -29,6 +29,8 @@ def loginpage():
 
 @app.route("/candidate_add")
 def add_candidate():
+    if session["admin_login"]!=1:
+        return redirect(url_for('ana_index'))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     cursor.execute("SELECT id FROM election WHERE status != 'ongoing' ")
@@ -68,7 +70,7 @@ def show_admin_panel():
     if session["admin_login"]==1:
         return render_template("admin_panel.html")
     else:
-        return redirect(url_for(loginpage))
+        return redirect(url_for("ana_index"))
 @app.route("/create_candidate",methods=["GET", "POST"])
 def register_candidate():
     ballot_id = request.form.get("election_select")
@@ -92,6 +94,8 @@ def register_candidate():
         return render_template("error_hub.html", error="Database error check your variables")
 @app.route("/show_ongoing_election")
 def show_ongoing():
+    if "TC" not in session:
+        return redirect(url_for("ana_index"))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     cursor.execute("SELECT id FROM election WHERE status='ongoing' ")
@@ -103,6 +107,8 @@ def admin_logout():
     return redirect(url_for("loginpage"))
 @app.route("/manage_election")
 def update_election_status():
+    if session["admin_login"]!=1:
+        return redirect(url_for('ana_index'))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     cursor.execute("SELECT * FROM election")
@@ -144,15 +150,20 @@ def validate_image():
 @app.route("/take_photo_test",methods=["GET", "POST"])
 def take_photo_test():
     citizen_id = request.form.get("TC")
-    print(citizen_id)
+    if(citizen_id.isnumeric()!=1):
+        error = "Invalid citizen id, please try again."
+        return render_template("error_hub.html",error=error)
     session["TC"] = citizen_id
-
     return render_template("take_pic.html")
 @app.route("/create_election")
 def create_election_form():
+    if session["admin_login"]!=1:
+        return redirect(url_for('ana_index'))
     return render_template("election2.html")
 @app.route("/show_elections")
 def show_elections():
+    if session["admin_login"]!=1:
+        return redirect(url_for('ana_index'))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     cursor.execute("SELECT * FROM election")
@@ -160,6 +171,8 @@ def show_elections():
     return render_template("all_elections.html",elections=records)
 @app.route("/see_election_results/<election_id>")
 def show_election_result(election_id):
+    if session["admin_login"]!=1:
+        return redirect(url_for('ana_index'))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     cursor.execute(("SELECT * FROM vote WHERE vote_ballot_id = %s" % election_id ))
@@ -218,6 +231,8 @@ def get_tc():
     return render_template("get_tc.html")
 @app.route("/citizen_index/<election_id>")
 def citizen_index(election_id):
+    if "TC" not in session:
+        return redirect(url_for("ana_index"))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     print(election_id)
@@ -262,6 +277,8 @@ def validate_new():
         return render_template("error_hub.html", error=error)
 @app.route("/wait_model",methods=["GET", "POST"])
 def wait_model():
+    if "TC" not in session:
+        return redirect(url_for("ana_index"))
     election_tips = [
         "Research the candidates and their positions before casting your vote.",
         "Make sure you are registered to vote and know your polling location.",
