@@ -187,7 +187,7 @@ def show_election_result(election_id):
         return redirect(url_for('ana_index'))
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
-    cursor.execute(("SELECT * FROM vote WHERE vote_ballot_id = %s" % election_id ))
+    cursor.execute("SELECT * FROM vote WHERE vote_ballot_id = %s", (election_id, ))
     records = cursor.fetchall()
     results = {}
     for vote in records:
@@ -226,7 +226,7 @@ def create_election():
             "INSERT INTO vote_ballot(id,election_id,type)"
             "VALUES (%s, %s, %s )"
         )
-        vote_ballot_data = (election_id, election_id, option)
+        vote_ballot_data = (election_id+option, election_id, option)
         cursor.execute(sql, vote_ballot_data)
         db.commit()
 
@@ -245,7 +245,7 @@ def citizen_index(election_id):
     db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
     cursor = db.cursor()
     print(election_id)
-    cursor.execute(("SELECT * FROM president WHERE vote_ballot_id = %s" % election_id))
+    cursor.execute("SELECT * FROM president WHERE vote_ballot_id = %s", (election_id,))
     records = cursor.fetchall()
     return render_template("citizen_index.html",candidates=records)
 @app.route("/register_vote/<candidate_id>/<candidate_keyword>/<election_id>")
