@@ -5,6 +5,7 @@ from flask import *
 from PIL import Image
 from io import BytesIO
 from model import *
+import random
 
 STATIC_FOLDER = 'templates/assets'
 app = Flask(__name__,static_folder=STATIC_FOLDER)
@@ -150,11 +151,22 @@ def validate_image():
 @app.route("/take_photo_test",methods=["GET", "POST"])
 def take_photo_test():
     citizen_id = request.form.get("TC")
+    db = mysql.connector.connect(host='localhost', database='cng491', user='root', password='root')
+    cursor = db.cursor()
+    if(citizen_id != ""):
+        cursor.execute(("SELECT ssn FROM citizen where ssn = %s" % citizen_id))
+        records = cursor.fetchall()
+        if records == []:
+            error = "This citizen ID does not exists."
+            return render_template("error_hub.html", error=error)
     if(citizen_id.isnumeric()!=1):
         error = "Invalid citizen id, please try again."
         return render_template("error_hub.html",error=error)
     session["TC"] = citizen_id
     return render_template("take_pic.html")
+@app.route("/test",methods=["GET", "POST"])
+def test():
+    return render_template("casia_selection.html")
 @app.route("/create_election")
 def create_election_form():
     if session["admin_login"]!=1:
@@ -223,9 +235,6 @@ def create_election():
     except:
         error="Election already exists in the database!, Try to add an another election."
         return render_template("error_hub.html",error=error)
-
-
-
 @app.route("/citizen_tc")
 def get_tc():
     return render_template("get_tc.html")
